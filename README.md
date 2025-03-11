@@ -1,4 +1,4 @@
-# React Location Detector
+# GeoLocator
 
 Amazon Location Serviceを利用した位置情報検出アプリケーションです。ユーザーの現在位置を取得し、地図上に表示します。
 
@@ -34,7 +34,7 @@ Amazon Location Serviceを利用した位置情報検出アプリケーション
 1. リポジトリをクローン
    ```
    git clone <リポジトリURL>
-   cd react-location-detector
+   cd geolocator
    ```
 
 2. 依存関係をインストール
@@ -75,7 +75,7 @@ Amazon Location Serviceを利用した位置情報検出アプリケーション
 ## ファイル構造
 
 ```
-react-location-detector/
+geolocator/
 ├── .env                # 環境変数（APIキー）
 ├── public/             # 静的ファイル
 ├── src/
