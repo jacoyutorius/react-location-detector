@@ -114,12 +114,41 @@ const Map = () => {
               markerRef.current.remove();
             }
 
+            // カスタムピン要素を作成
+            const el = document.createElement('div');
+            el.className = 'custom-marker';
+            
+            // ピンのHTML構造を設定
+            el.innerHTML = `
+              <div class="pin-container">
+                <div class="pin"></div>
+                <div class="pin-effect"></div>
+              </div>
+            `;
+            
             // 新しいマーカーを作成
             const marker = new maplibregl.Marker({
-              color: '#FF0000'
+              element: el,
+              anchor: 'bottom'
             })
               .setLngLat([longitude, latitude])
               .addTo(mapRef.current);
+            
+            // ポップアップを追加
+            const popup = new maplibregl.Popup({ offset: 25 })
+              .setHTML(`
+                <div class="popup-content">
+                  <h4>現在位置</h4>
+                  <p>緯度: ${latitude.toFixed(6)}</p>
+                  <p>経度: ${longitude.toFixed(6)}</p>
+                </div>
+              `);
+            
+            // マーカークリック時にポップアップを表示
+            el.addEventListener('click', () => {
+              marker.setPopup(popup);
+              popup.addTo(mapRef.current);
+            });
 
             markerRef.current = marker;
           } catch (error) {

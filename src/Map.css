@@ -81,3 +81,104 @@
   margin: 15px 0;
   text-align: left;
 }
+
+/* カスタムマーカースタイル */
+.custom-marker {
+  cursor: pointer;
+}
+
+.pin-container {
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+
+.pin {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 24px;
+  height: 36px;
+  margin-left: -12px;
+  border-radius: 50% 50% 50% 0;
+  background: #FF4136;
+  transform: rotate(-45deg);
+  animation: bounce 0.5s ease-out;
+}
+
+.pin:after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+}
+
+.pin-effect {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 24px;
+  height: 36px;
+  margin-left: -12px;
+  border-radius: 50% 50% 50% 0;
+  background: rgba(255, 65, 54, 0.3);
+  transform: rotate(-45deg);
+  animation: pulse 1.5s infinite;
+}
+
+/* ポップアップスタイル */
+.maplibregl-popup {
+  max-width: 200px;
+}
+
+.popup-content {
+  padding: 5px;
+}
+
+.popup-content h4 {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.popup-content p {
+  margin: 3px 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* アニメーション */
+@keyframes bounce {
+  0% {
+    transform: rotate(-45deg) translateY(-20px);
+    opacity: 0;
+  }
+  60% {
+    transform: rotate(-45deg) translateY(5px);
+    opacity: 1;
+  }
+  80% {
+    transform: rotate(-45deg) translateY(-2px);
+  }
+  100% {
+    transform: rotate(-45deg) translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: rotate(-45deg) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: rotate(-45deg) scale(1.4);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(-45deg) scale(1);
+    opacity: 0;
+  }
+}
