@@ -180,7 +180,7 @@ const Map = () => {
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
+        timeout: 30000, // タイムアウト時間を30秒に設定
         maximumAge: 0,
       }
     );
@@ -296,7 +296,7 @@ const Map = () => {
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
+        timeout: 30000, // タイムアウト時間を30秒に設定
         maximumAge: 0,
       }
     );
@@ -343,7 +343,6 @@ const Map = () => {
 
   return (
     <div>
-      <h2>位置情報検出アプリ</h2>
       <div className="controls">
         <button onClick={getCurrentLocation} disabled={loading || isWatching}>
           {loading ? '取得中...' : '現在位置を取得'}
