@@ -12,6 +12,7 @@ const Map = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isWatching, setIsWatching] = useState(false);
+  const [currentZoom, setCurrentZoom] = useState(14); // 現在のズーム倍率を保持
 
   // 地図の初期化
   useEffect(() => {
@@ -73,6 +74,13 @@ const Map = () => {
     map.addControl(new maplibregl.NavigationControl(), 'top-right');
     map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
 
+    // ズーム変更イベントリスナーを追加
+    map.on('zoom', () => {
+      if (map) {
+        setCurrentZoom(map.getZoom());
+      }
+    });
+
     mapRef.current = map;
 
     return () => {
@@ -103,9 +111,11 @@ const Map = () => {
 
         // 地図を現在位置に移動
         if (mapRef.current) {
+          // 初回取得時は14、それ以降は現在のズーム倍率を使用
+          const zoom = location ? currentZoom : 14;
           mapRef.current.flyTo({
             center: [longitude, latitude],
-            zoom: 14,
+            zoom: zoom,
             essential: true,
           });
 
@@ -215,9 +225,10 @@ const Map = () => {
 
         // 地図を現在位置に移動
         if (mapRef.current) {
+          // 現在のズーム倍率を使用
           mapRef.current.flyTo({
             center: [longitude, latitude],
-            zoom: 14,
+            zoom: currentZoom,
             essential: true,
           });
 
