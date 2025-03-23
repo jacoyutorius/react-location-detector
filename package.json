@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-sdk/client-location": "^3.772.0",
+    "aws-amplify": "^6.13.6",
     "maplibre-gl": "^5.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
