@@ -24,7 +24,7 @@ const Map = () => {
       try {
         const configured = configureAmplify();
         setAwsConfigured(configured);
-        
+
         if (!configured) {
           console.warn('AWS設定が完了していません。ジオフェンス機能は利用できません。');
         }

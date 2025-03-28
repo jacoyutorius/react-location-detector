@@ -15,6 +15,7 @@ const getLocationClient = async () => {
   try {
     // 認証情報を取得
     const credentials = await getCredentials();
+    console.log({ credentials }); //debug
     
     // リージョンを環境変数から取得
     const region = import.meta.env.VITE_AWS_REGION || 'ap-northeast-1';
