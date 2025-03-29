@@ -7,8 +7,8 @@ import { getCredentials } from '../aws-config';
 
 // ジオフェンスコレクション名（環境変数から取得）
 const GEOFENCE_COLLECTION_NAME = import.meta.env.VITE_AWS_GEOFENCE_COLLECTION_NAME || 'default-geofences';
-// デバイスID（ユーザーごとに一意のIDを使用）
-const DEVICE_ID = 'user-device';
+// デフォルトのデバイスID（identityIdが取得できない場合のフォールバック）
+const DEFAULT_DEVICE_ID = 'default-device';
 
 // Amazon Location Serviceクライアントの初期化
 const getLocationClient = async () => {
@@ -84,6 +84,12 @@ export const getGeofence = async (geofenceId) => {
  */
 export const evaluateGeofences = async (longitude, latitude) => {
   try {
+    // 認証情報を取得
+    const credentials = await getCredentials();
+    // identityIdをデバイスIDとして使用（なければデフォルト値を使用）
+    const deviceId = credentials.identityId || DEFAULT_DEVICE_ID;
+    console.log(`デバイスID: ${deviceId}`); // デバッグ用
+    
     const client = await getLocationClient();
     
     // ジオフェンスを評価
@@ -91,7 +97,7 @@ export const evaluateGeofences = async (longitude, latitude) => {
       CollectionName: GEOFENCE_COLLECTION_NAME,
       DevicePositionUpdates: [
         {
-          DeviceId: DEVICE_ID,
+          DeviceId: deviceId, // 動的なデバイスIDを使用
           Position: [longitude, latitude],
           SampleTime: new Date(),
         },

@@ -146,11 +146,16 @@ export const getCredentials = async () => {
       throw new Error('認証情報が取得できませんでした。AWS設定を確認してください。');
     }
     
+    // identityIdを取得
+    const identityId = session.identityId;
+    console.log('Identity ID:', identityId); // デバッグ用
+    
     return {
       accessKeyId: session.credentials.accessKeyId,
       secretAccessKey: session.credentials.secretAccessKey,
       sessionToken: session.credentials.sessionToken,
-      expiration: session.credentials.expiration
+      expiration: session.credentials.expiration,
+      identityId: identityId // identityIdを追加
     };
   } catch (error) {
     console.error('認証情報の取得エラー:', error);
