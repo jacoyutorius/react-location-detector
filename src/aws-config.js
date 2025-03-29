@@ -119,15 +119,7 @@ const configureAmplify = () => {
             
             // Amplify形式で認証情報とidentityIdを返す
             return response;
-            // return {
-            //   credentials: {
-            //     accessKeyId: credentials.AccessKeyId,
-            //     secretAccessKey: credentials.SecretKey,
-            //     sessionToken: credentials.SessionToken,
-            //     expiration: credentials.Expiration,
-            //   },
-            //   identityId: identityId
-            // };
+
           } catch (error) {
             console.error('認証情報の取得エラー:', error);
             throw error;
