@@ -1,0 +1,16 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "geo:GetMapTile",
+        "geo:GetMapStyleDescriptor",
+        "geo:ListGeofences",
+        "geo:GetGeofence",
+        "geo:BatchEvaluateGeofences"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

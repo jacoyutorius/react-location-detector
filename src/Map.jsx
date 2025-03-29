@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './Map.css';
+import Geofence from './Geofence';
+import configureAmplify from './aws-config';
 
 const Map = () => {
   const mapRef = useRef(null);
@@ -13,6 +15,27 @@ const Map = () => {
   const [error, setError] = useState(null);
   const [isWatching, setIsWatching] = useState(false);
   const [currentZoom, setCurrentZoom] = useState(14); // 現在のズーム倍率を保持
+  const [awsConfigured, setAwsConfigured] = useState(false);
+  const [showGeofence, setShowGeofence] = useState(false);
+
+  // AWS Amplifyの設定
+  useEffect(() => {
+    const configureAws = async () => {
+      try {
+        const configured = configureAmplify();
+        setAwsConfigured(configured);
+
+        if (!configured) {
+          console.warn('AWS設定が完了していません。ジオフェンス機能は利用できません。');
+        }
+      } catch (error) {
+        console.error('AWS設定エラー:', error);
+        setAwsConfigured(false);
+      }
+    };
+    
+    configureAws();
+  }, []);
 
   // 地図の初期化
   useEffect(() => {
@@ -367,11 +390,22 @@ const Map = () => {
         <button onClick={resetMap} disabled={loading || !location}>
           リセット
         </button>
+        {awsConfigured && (
+          <button 
+            onClick={() => setShowGeofence(!showGeofence)}
+            className={showGeofence ? 'active' : ''}
+          >
+            {showGeofence ? 'ジオフェンス非表示' : 'ジオフェンス表示'}
+          </button>
+        )}
       </div>
 
       <div className="map-container">
         <div ref={mapContainerRef} className="map-wrapper" />
         {loading && <div className="loading">位置情報を取得中...</div>}
+        {showGeofence && awsConfigured && mapRef.current && (
+          <Geofence map={mapRef.current} userLocation={location} />
+        )}
       </div>
 
       {error && <div className="error-message">{error}</div>}
