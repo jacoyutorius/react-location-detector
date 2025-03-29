@@ -83,8 +83,17 @@ const Geofence = ({ map, userLocation }) => {
         
         for (let i = 0; i < points; i++) {
           const angle = (i / points) * (2 * Math.PI);
-          const lng = center[0] + (radius / 111320) * Math.cos(angle);
-          const lat = center[1] + (radius / 111320) * Math.sin(angle) / Math.cos(center[1] * (Math.PI / 180));
+          
+          // 緯度1度あたりの距離（メートル）- ほぼ一定
+          const METERS_PER_DEGREE_LATITUDE = 111320; 
+          
+          // 経度1度あたりの距離（メートル）- 緯度によって変わる
+          const metersPerDegreeLongitude = METERS_PER_DEGREE_LATITUDE * Math.cos(center[1] * (Math.PI / 180));
+          
+          // 正しい計算
+          const lat = center[1] + (radius / METERS_PER_DEGREE_LATITUDE) * Math.sin(angle);
+          const lng = center[0] + (radius / metersPerDegreeLongitude) * Math.cos(angle);
+          
           coordinates.push([lng, lat]);
         }
         
