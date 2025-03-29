@@ -55,6 +55,8 @@ const Geofence = ({ map, userLocation }) => {
   // 地図上にジオフェンスを表示
   const displayGeofencesOnMap = (geofenceList) => {
     if (!map) return;
+
+    console.log('ジオフェンスを地図に表示:', geofenceList);
     
     // 既存のジオフェンスレイヤーをクリア
     geofenceList.forEach((geofence) => {

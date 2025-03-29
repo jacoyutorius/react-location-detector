@@ -1,5 +1,10 @@
 import { Amplify } from 'aws-amplify';
 import { fetchAuthSession } from 'aws-amplify/auth';
+import {
+  CognitoIdentityClient,
+  GetIdCommand,
+  GetCredentialsForIdentityCommand,
+} from '@aws-sdk/client-cognito-identity';
 
 // Amazon Location Serviceの設定
 const configureAmplify = () => {
@@ -16,8 +21,11 @@ const configureAmplify = () => {
     return false;
   }
   
-  // Amplifyの設定
-  Amplify.configure({
+  // Cognito Identity Clientのインスタンス
+  const cognitoClient = new CognitoIdentityClient({ region });
+  
+  // 基本設定オブジェクト
+  const config = {
     // Auth設定
     Auth: {
       Cognito: {
@@ -44,6 +52,89 @@ const configureAmplify = () => {
         },
       },
     },
+  };
+  
+  // Amplifyの設定（カスタム認証プロバイダーを追加）
+  Amplify.configure(config, {
+    Auth: {
+      tokenProvider: {
+        async getTokens() {
+          return null;
+        }
+      },
+      credentialsProvider: {
+        clearCredentialsAndIdentityId() {
+          // 認証情報をクリアする処理（必要に応じて実装）
+          console.log('認証情報をクリアしました');
+        },
+        async getCredentialsAndIdentityId() {
+          try {
+            console.log('Identity Pool認証情報を取得中...', { region, identityPoolId });
+
+            if (!identityPoolId) {
+              throw new Error('AWS Identity Pool IDが設定されていません。.envファイルを確認してください。');
+            }
+
+            // Identity ID を取得（ゲスト）
+            console.log('Identity ID を取得中...');
+            const getIdResponse = await cognitoClient.send(
+              new GetIdCommand({
+                IdentityPoolId: identityPoolId,
+              })
+            );
+
+            const identityId = getIdResponse.IdentityId;
+            if (!identityId) {
+              throw new Error('Identity ID が取得できませんでした。');
+            }
+
+            console.log(`Identity ID: ${identityId}`);
+
+            // 認可情報（credentials）を取得
+            const credentialsResponse = await cognitoClient.send(
+              new GetCredentialsForIdentityCommand({
+                IdentityId: identityId,
+              })
+            );
+
+            const credentials = credentialsResponse.Credentials;
+
+            if (!credentials || !credentials.AccessKeyId || !credentials.SecretKey || !credentials.SessionToken) {
+              console.error('認証失敗: 認可情報が取得できませんでした');
+              throw new Error('認証情報が取得できませんでした。AWS設定を確認してください。');
+            }
+
+            console.log('認証成功: 認証情報を取得できました');
+
+            const response = {
+              credentials: {
+                accessKeyId: credentials.AccessKeyId,
+                secretAccessKey: credentials.SecretKey,
+                sessionToken: credentials.SessionToken,
+                expiration: credentials.Expiration,
+              },
+              identityId: identityId
+            };
+            console.log('認証情報:', response); // デバッグ用
+            
+            // Amplify形式で認証情報とidentityIdを返す
+            return response;
+            // return {
+            //   credentials: {
+            //     accessKeyId: credentials.AccessKeyId,
+            //     secretAccessKey: credentials.SecretKey,
+            //     sessionToken: credentials.SessionToken,
+            //     expiration: credentials.Expiration,
+            //   },
+            //   identityId: identityId
+            // };
+          } catch (error) {
+            console.error('認証情報の取得エラー:', error);
+            throw error;
+          }
+        }
+      }
+    }
   });
   
   return true;
