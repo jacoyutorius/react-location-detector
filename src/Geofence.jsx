@@ -58,23 +58,11 @@ const Geofence = ({ map, userLocation }) => {
 
     console.log('ジオフェンスを地図に表示:', geofenceList);
     
-    // 既存のジオフェンスレイヤーをクリア
+    // 新しいジオフェンスを追加または更新
     geofenceList.forEach((geofence) => {
       const sourceId = `geofence-source-${geofence.GeofenceId}`;
       const layerId = `geofence-layer-${geofence.GeofenceId}`;
-      
-      if (map.getLayer(layerId)) {
-        map.removeLayer(layerId);
-      }
-      if (map.getSource(sourceId)) {
-        map.removeSource(sourceId);
-      }
-    });
-    
-    // 新しいジオフェンスを追加
-    geofenceList.forEach((geofence) => {
-      const sourceId = `geofence-source-${geofence.GeofenceId}`;
-      const layerId = `geofence-layer-${geofence.GeofenceId}`;
+      const outlineLayerId = `${layerId}-outline`;
       
       // ジオフェンスの色を決定
       const color = insideGeofences.includes(geofence.GeofenceId)
@@ -132,13 +120,26 @@ const Geofence = ({ map, userLocation }) => {
         };
       }
       
-      // ソースとレイヤーを追加
-      if (geoJson) {
+      // ソースが既に存在するかチェック
+      if (map.getSource(sourceId)) {
+        // ソースが存在する場合はデータだけを更新
+        map.getSource(sourceId).setData(geoJson);
+        
+        // レイヤーの色を更新
+        if (map.getLayer(layerId)) {
+          map.setPaintProperty(layerId, 'fill-color', color);
+        }
+        if (map.getLayer(outlineLayerId)) {
+          map.setPaintProperty(outlineLayerId, 'line-color', color);
+        }
+      } else {
+        // ソースが存在しない場合は新規作成
         map.addSource(sourceId, {
           type: 'geojson',
           data: geoJson,
         });
         
+        // 塗りつぶしレイヤーを追加
         map.addLayer({
           id: layerId,
           type: 'fill',
@@ -151,7 +152,7 @@ const Geofence = ({ map, userLocation }) => {
         
         // 境界線レイヤーを追加
         map.addLayer({
-          id: `${layerId}-outline`,
+          id: outlineLayerId,
           type: 'line',
           source: sourceId,
           paint: {
