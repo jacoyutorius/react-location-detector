@@ -1,5 +1,6 @@
 import './App.css'
 import Map from './Map'
+import { AppNotification } from './services/NotificationService.jsx'
 
 function App() {
   return (
@@ -13,6 +14,9 @@ function App() {
       <footer className="app-footer">
         <p>© 2025 GeoLocator</p>
       </footer>
+      
+      {/* アプリ内通知コンポーネント */}
+      <AppNotification />
     </div>
   )
 }
