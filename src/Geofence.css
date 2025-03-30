@@ -109,6 +109,72 @@
 }
 
 
+/* 通知設定のスタイル */
+.notification-settings {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.notification-settings h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #555;
+  font-size: 16px;
+}
+
+.notification-settings h5 {
+  margin-top: 15px;
+  margin-bottom: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.setting-item {
+  margin-bottom: 10px;
+}
+
+.setting-item label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.setting-item input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.custom-messages {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.message-input {
+  margin-bottom: 10px;
+}
+
+.message-input label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 13px;
+  color: #555;
+}
+
+.message-input input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.message-input input:focus {
+  border-color: #03A9F4;
+  outline: none;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
   .geofence-container {

@@ -5,6 +5,7 @@ import {
   listGeofences,
   evaluateGeofences
 } from './services/GeofenceService';
+import { sendNotification } from './services/NotificationService.jsx';
 
 // ジオフェンスの色設定
 const GEOFENCE_COLORS = {
@@ -15,6 +16,9 @@ const GEOFENCE_COLORS = {
 const Geofence = ({ map, userLocation }) => {
   const [geofences, setGeofences] = useState([]);
   const [insideGeofences, setInsideGeofences] = useState([]);
+  const [previousInsideGeofences, setPreviousInsideGeofences] = useState([]);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true); // デフォルトで有効
+  const [customMessages, setCustomMessages] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -219,13 +223,77 @@ const Geofence = ({ map, userLocation }) => {
         });
       }
       
+      // 新しく入ったジオフェンスを検出
+      const newlyEnteredGeofences = insideIds.filter(
+        id => !previousInsideGeofences.includes(id)
+      );
+      
+      // 通知が有効で、新しく入ったジオフェンスがある場合
+      if (notificationsEnabled && newlyEnteredGeofences.length > 0) {
+        newlyEnteredGeofences.forEach(geofenceId => {
+          const geofence = geofences.find(g => g.GeofenceId === geofenceId);
+          const geofenceName = geofence?.Description || geofenceId;
+          
+          // カスタムメッセージがあればそれを使用、なければデフォルトメッセージ
+          const message = customMessages[geofenceId] || 
+            `${geofenceName}エリアに入りました`;
+          
+          // アプリ内通知を送信
+          sendNotification("ジオフェンス通知", message);
+        });
+      }
+      
+      // 状態を更新
       setInsideGeofences(insideIds);
+      setPreviousInsideGeofences(insideIds);
       
       // 地図上のジオフェンスの色を更新
       displayGeofencesOnMap(geofences);
     } catch (error) {
       console.error('ジオフェンス評価エラー:', error);
     }
+  };
+  
+  // 通知設定コンポーネント
+  const NotificationSettings = () => {
+    return (
+      <div className="notification-settings">
+        <h4>通知設定</h4>
+        
+        <div className="setting-item">
+          <label>
+            <input
+              type="checkbox"
+              checked={notificationsEnabled}
+              onChange={() => setNotificationsEnabled(!notificationsEnabled)}
+            />
+            ジオフェンス通知を有効にする
+          </label>
+        </div>
+        
+        {notificationsEnabled && geofences.length > 0 && (
+          <div className="custom-messages">
+            <h5>カスタムメッセージ</h5>
+            {geofences.map(geofence => (
+              <div key={geofence.GeofenceId} className="message-input">
+                <label>{geofence.Description || geofence.GeofenceId}:</label>
+                <input
+                  type="text"
+                  value={customMessages[geofence.GeofenceId] || ''}
+                  onChange={(e) => {
+                    setCustomMessages({
+                      ...customMessages,
+                      [geofence.GeofenceId]: e.target.value
+                    });
+                  }}
+                  placeholder={`${geofence.Description || geofence.GeofenceId}エリアに入りました`}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
 
@@ -262,6 +330,9 @@ const Geofence = ({ map, userLocation }) => {
             </ul>
           )}
         </div>
+        
+        {/* 通知設定コンポーネントを追加 */}
+        <NotificationSettings />
       </div>
     </div>
   );
